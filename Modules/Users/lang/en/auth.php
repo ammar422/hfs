@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'login_success'                                 => 'Successfully logged in',
+    'login_failed'                                  => 'Login credentials are incorrect',
+    'Unauthorized'                                  => 'Unauthorized, you must log in first',
+    'unverified'                                    => 'Your email has not been verified, please verify it first',
+    'loged_out'                                     => 'Successfully logged out',
+    'register'                                      => 'User registered successfully. A verification message has been sent to your email.',
+    'register_failed'                               => 'Registration failed, please try again later.',
+    'Invalid_code'                                  => 'The verification code is invalid',
+    'verified_done'                                 => 'Email verified successfully',
+    'password_code'                                 => 'The password reset code has been successfully sent to the email.',
+    'password_code_faild'                           => 'The password reset code was not sent to the email',
+    'Invalid_reset_code'                            => 'Sorry, the password reset code is incorrect',
+    'rest_success'                                  => 'Password reset successfully',
+    'same_password'                                 => 'Sorry, the new password cannot be the same as the current password',
+    'reset_password_mail'                           => 'Password Reset',
+    'your_reset_password_code_is'                   => 'Your password reset code is:',
+    'please_use_this_code_to_reset_your_password'   => 'Please use this code to reset your password.',
+    'thank_you_for_using_our_application'           => 'Thank you for using our application.',
+    'all_rights_reserved'                           => 'All rights reserved.',
+    'welecome'                                      => 'Welcome',
+    'email_verification_code'                       => 'Email verification code',
+    'your_email_verification_code_is'               => 'Your email verification code is:',
+    'please_use_this_code_to_verify_your_email'     => 'Please use this code to verify your email.',
+    'pending'                                       => 'Your account is pending approval.',
+    'banned'                                        => 'Your account has been blocked by the administration.',
+    'data_get'                                      => 'Data has been successfully fetched',
+    'data_udated'                                   => 'Data has been successfully updated',
+    'validation_message'                            => 'There is an some error, please review your data',
+
+];
