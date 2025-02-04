@@ -10,7 +10,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Modules\Users\Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Wallets\Entities\CommissionWallet;
+use Modules\Wallets\Entities\TokenWallet;
 
 /**
  * @property string|int|null $verification_code
@@ -38,12 +41,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
-     * @return string []
+     * @return array
      */
     public function getJWTCustomClaims()
     {
         return [];
     }
+
 
     /**
      * The attributes that are mass assignable.
@@ -99,13 +103,19 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         parent::boot();
         static::creating(function ($model) {
-          
+            $model->full_name = $model->first_name . ' ' . $model->last_name;
         });
-        static::creating(function ($model) {
-                $model->full_name = $model->first_name . ' ' . $model->last_name;
-            
-        });
+        static::created(function ($model) {
+            if (!CommissionWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+                $model->commissionWallet()->create([
+                    'user_id' => $model->id
+                ]);
 
+            if (!TokenWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+                $model->tokenWallet()->create([
+                    'user_id' => $model->id
+                ]);
+        });
     }
 
     /**
@@ -171,6 +181,15 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $timestamp !== false ? date('Y-m-d', $timestamp) : null;
     }
 
+    public function commissionWallet(): HasOne
+    {
+        return $this->hasOne(CommissionWallet::class);
+    }
+
+    public function tokenWallet(): HasOne
+    {
+        return $this->hasOne(TokenWallet::class);
+    }
 
     /**
      * @return BelongsTo<AdminGroup,User>

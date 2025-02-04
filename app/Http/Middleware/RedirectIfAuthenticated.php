@@ -21,7 +21,8 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return lynx()->data('this is home page , you are loged in ,logout first')->message('alert message')->response();
+                // return redirect(RouteServiceProvider::HOME);
             }
         }
 

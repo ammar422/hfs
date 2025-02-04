@@ -108,6 +108,7 @@ class UsersAuthController extends Controller
         $credentials = [];
         $credentials['account_type'] = 'user';
         $credentials['password'] = $request->password;
+
         if (filter_var($request->account, FILTER_VALIDATE_EMAIL)) {
             $credentials['email'] = $request->account;
         } else {

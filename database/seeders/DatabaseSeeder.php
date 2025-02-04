@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             \Modules\Users\Database\Seeders\UsersDatabaseSeeder::class,
+            \Modules\Packages\Database\Seeders\PackagesDatabaseSeeder::class,
         ]);
     }
 }

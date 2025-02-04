@@ -1,3 +1,5 @@
 {
-    "Users": true
+    "Users": true,
+    "Wallets": true,
+    "Packages": true
 }
