@@ -5,16 +5,18 @@ namespace Modules\Users\App\Models;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Modules\Wallets\Entities\TokenWallet;
+use Modules\Packages\Entities\Subscription;
+use Modules\Commissions\Entities\Commission;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Modules\Wallets\Entities\CommissionWallet;
 use Modules\Users\Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Modules\Packages\Entities\Subscription;
-use Modules\Wallets\Entities\CommissionWallet;
-use Modules\Wallets\Entities\TokenWallet;
 
 /**
  * @property string|int|null $verification_code
@@ -73,6 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'account_status',
         'verification_code',
         'ban_reason',
+        'sponsor_id',
     ];
 
     /**
@@ -182,6 +185,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $timestamp !== false ? date('Y-m-d', $timestamp) : null;
     }
 
+
+
+
+
+
+    // outer relations strat ////////////////////////
+
     public function commissionWallet(): HasOne
     {
         return $this->hasOne(CommissionWallet::class);
@@ -197,6 +207,45 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->hasOne(Subscription::class);
     }
 
+    public function commission(): HasMany
+    {
+        return $this->hasMany(Commission::class);
+    }
+
+    // outer relations end /////////////////////////
+
+
+
+    // inner relations start ////////////////////////////// 
+
+    public function referrals()    // Direct referrals (people they sponsored)
+    {
+        return $this->hasMany(User::class, 'sponsor_id');
+    }
+
+
+    public function leftLeg()     // Left leg direct referrals
+    {
+        return $this->hasMany(User::class, 'sponsor_id')->where('placement', 'left');
+    }
+
+
+    public function rightLeg()    // Right leg direct referrals
+    {
+        return $this->hasMany(User::class, 'sponsor_id')->where('placement', 'right');
+    }
+
+
+    // inner relations end //////////////////////////////// 
+
+
+
+    // functions start ////////////////////////////// 
+
+
+
+
+    // functions end //////////////////////////////// 
 
     /**
      * @return BelongsTo<AdminGroup,User>

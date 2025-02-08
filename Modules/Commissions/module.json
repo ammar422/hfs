@@ -1,0 +1,11 @@
+{
+    "name": "Commissions",
+    "alias": "commissions",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Commissions\\Providers\\CommissionsServiceProvider"
+    ],
+    "files": []
+}
