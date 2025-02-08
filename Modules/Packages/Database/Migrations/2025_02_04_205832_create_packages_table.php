@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->enum('name', ['Basic-init', 'Basic-init-plus', 'Premium-init', 'Pro-init', 'Essential', 'Basic', 'Premium', 'Pro', 'Ultimate']);
             $table->decimal('price', 65, 2);
-            $table->enum('billing_period', ['Monthly', 'Annual', 'Quarterly', 'Biannual', 'Lifelong']);
-            $table->integer('cv');
+            $table->enum('billing_period', ['monthly', 'yearly', 'quarterly', 'biannual', 'lifelong']);
+            $table->integer('cv')->default(0);
             $table->json('features')->nullable();
             $table->softDeletes();
             $table->timestamps();

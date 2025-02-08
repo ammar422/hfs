@@ -4,6 +4,8 @@ namespace Modules\Users\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\Countries\App\Models\Country;
+use Modules\Packages\Entities\Package;
+use Modules\Packages\Entities\Subscription;
 use Modules\Users\App\Models\AdminGroup;
 use Modules\Users\App\Models\AdminGroupRole;
 use Modules\Users\App\Models\User;
@@ -47,8 +49,17 @@ class UsersDatabaseSeeder extends Seeder
             ]);
         }
 
-        User::factory()->count(10)->create(
-            ['password' => bcrypt((string) 123456)],
-        );
+        User::factory()->count(10)->create();
+        $users =  User::where('account_type', 'user')->get();
+        foreach ($users as $user) {
+            $packege = Package::where('cv', '!=', 0)->inRandomOrder()->first();
+            Subscription::create([
+                'user_id' => $user->id,
+                'package_id' => $packege->id,
+                'name' => $packege->name,
+                'cv' => $packege->cv,
+                'billing_period' => $packege->billing_period,
+            ]);
+        }
     }
 }

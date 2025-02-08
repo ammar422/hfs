@@ -21,7 +21,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Basic-init',
                 'price' => 0,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 0,
                 'features' => [
                     'Trade alert' => true,
@@ -42,7 +42,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Basic-init-plus',
                 'price' => 0,
-                'billing_period' => 'Quarterly',
+                'billing_period' => 'quarterly',
                 'cv' => 0,
                 'features' => [
                     'Trade alert' => true,
@@ -63,7 +63,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Premium-init',
                 'price' => 0,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 0,
                 'features' => [
                     'Trade alert' => true,
@@ -85,7 +85,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Pro-init',
                 'price' => 0,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 0,
                 'features' => [
                     'Trade alert' => true,
@@ -108,7 +108,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Essential',
                 'price' => 99,
-                'billing_period' => 'Monthly',
+                'billing_period' => 'monthly',
                 'cv' => 25,
                 'features' => [
                     'Trade alert' => true,
@@ -128,7 +128,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Basic',
                 'price' => 399,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 100,
                 'features' => [
                     'Trade alert' => true,
@@ -148,7 +148,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Premium',
                 'price' => 749,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 200,
                 'features' => [
                     'Trade alert' => true,
@@ -168,7 +168,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Pro',
                 'price' => 1499,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 500,
                 'features' => [
                     'Trade alert' => true,
@@ -188,7 +188,7 @@ class PackagesDatabaseSeeder extends Seeder
             [
                 'name' => 'Ultimate',
                 'price' => 1999,
-                'billing_period' => 'Annual',
+                'billing_period' => 'yearly',
                 'cv' => 600,
                 'features' => [
                     'Trade alert' => true,

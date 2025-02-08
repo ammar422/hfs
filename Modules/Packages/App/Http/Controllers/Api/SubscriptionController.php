@@ -1,17 +1,18 @@
-<?php 
+<?php
+
 namespace Modules\Packages\App\Http\Controllers\Api;
 
-use Modules\Packages\Entities\Package;
 use Illuminate\Support\Facades\Storage;
-use Modules\Packages\Policies\PackagePolicy;
-use Modules\Packages\Transformers\PackageResource;
+use Modules\Packages\Entities\Subscription;
+use Modules\Packages\Policies\SubscriptionPolicy;
+use Modules\Packages\Transformers\SubscriptionResource;
 
-class PackageController extends \Lynx\Base\Api
+class SubscriptionController extends \Lynx\Base\Api
 {
-    protected $entity               = Package::class;
-    protected $resourcesJson        = PackageResource::class;
-    // protected $policy            = PackagePolicy::class;
-    protected $guard                = 'api';
+    protected $entity           = Subscription::class;
+    protected $resourcesJson    = SubscriptionResource::class;
+    protected $policy           = SubscriptionPolicy::class;
+    protected $guard            = 'api';
     protected $spatieQueryBuilder   = true;
     protected $paginateIndex        = true;
     protected $withTrashed          = false;
@@ -26,7 +27,7 @@ class PackageController extends \Lynx\Base\Api
      */
     public function query($entity): Object
     {
-        return $entity;
+        return $entity->where('user_id', auth('api')->id());
     }
 
     /**
@@ -119,7 +120,7 @@ class PackageController extends \Lynx\Base\Api
      */
     public function afterShow($entity): Object
     {
-        return new PackageResource($entity);
+        return new SubscriptionResource($entity);
     }
 
     /**
@@ -143,5 +144,11 @@ class PackageController extends \Lynx\Base\Api
     {
         // do something
         // $entity->file
+    }
+
+    public function mySubscription()
+    {
+        $data =   $this->entity::where('user_id', auth('api')->id())->first();
+        return lynx()->data(new $this->resourcesJson($data))->response();
     }
 }

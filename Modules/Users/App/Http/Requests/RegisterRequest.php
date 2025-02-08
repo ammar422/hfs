@@ -27,15 +27,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_type'         => 'required|in:dooner,charity',
-            'charity_name:en'   => 'required_if:user_type,charity|string',
-            'charity_name:ar'   => 'required_if:user_type,charity|string',
             'first_name'        => 'required_if:user_type,dooner|string',
             'last_name'         => 'required_if:user_type,dooner|string',
             'email'             => 'required|email|unique:users,email',
             'mobile'            => 'required|string|unique:users,mobile',
 
-            'country_id'    => 'required|exists:countries,id',
             'password' => [
                 'required',
                 'string',

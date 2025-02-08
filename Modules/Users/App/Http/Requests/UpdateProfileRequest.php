@@ -32,7 +32,6 @@ class UpdateProfileRequest extends FormRequest
             'mobile'        => 'required|string|unique:users,mobile,' . $userId,
             'photo'         => 'sometimes|nullable|image|mimetypes:image/*|max:2048',
 
-            'country_id'    => 'required|exists:countries,id',
         ];
     }
 

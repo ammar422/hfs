@@ -4,9 +4,10 @@ namespace Modules\Wallets\Entities;
 
 use Modules\Users\App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Wallets\Database\Factories\TokenWalletFactory;
 
 class TokenWallet extends Model
 {
@@ -28,6 +29,6 @@ class TokenWallet extends Model
     }
     protected static function newFactory()
     {
-        return \Modules\Wallets\Database\factories\TokenWalletFactory::new();
+        return TokenWalletFactory::new();
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Packages\Entities\Subscription;
 use Modules\Wallets\Entities\CommissionWallet;
 use Modules\Wallets\Entities\TokenWallet;
 
@@ -190,6 +191,12 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         return $this->hasOne(TokenWallet::class);
     }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
 
     /**
      * @return BelongsTo<AdminGroup,User>

@@ -2,11 +2,12 @@
 
 namespace Modules\Wallets\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Users\App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Wallets\Database\Factories\CommissionWalletFactory;
 
 class CommissionWallet extends Model
 {
@@ -28,6 +29,6 @@ class CommissionWallet extends Model
     }
     protected static function newFactory()
     {
-        return \Modules\Wallets\Database\factories\CommissionWalletFactory::new();
+        return CommissionWalletFactory::new();
     }
 }

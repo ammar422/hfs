@@ -23,7 +23,7 @@ class PackageFactory extends Factory
         return [
             'name' => $this->faker->randomElement(['Essential', 'Basic', 'Premium', 'Pro', 'Ultimate']),
             'price' => 0,
-            'billing_period' => $this->faker->randomElement(['Monthly', 'Annual', 'Quarterly', 'Biannual', 'Lifelong']),
+            'billing_period' => $this->faker->randomElement(['monthly', 'yearly', 'quarterly', 'biannual', 'lifelong']),
             'cv' => 0,
         ];
     }

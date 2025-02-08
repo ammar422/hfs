@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Packages\App\Http\Controllers\Api\PackageController;
-
+use Modules\Packages\App\Http\Controllers\Api\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +16,10 @@ use Modules\Packages\App\Http\Controllers\Api\PackageController;
 */
 
 
-Route::apiResource('Packages', PackageController::class);
+Route::apiResource('Packages', PackageController::class)->only('index', 'show');
+
+Route::middleware('auth:api', 'verified')->group(function () {
+    Route::prefix('user')->group(function () {
+        Route::get('subscription',[ SubscriptionController::class , 'mySubscription']);
+    });
+});
