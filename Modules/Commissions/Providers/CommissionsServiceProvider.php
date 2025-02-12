@@ -4,6 +4,7 @@ namespace Modules\Commissions\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Modules\Commissions\Console\CalculateBinaryCommissions;
 
 class CommissionsServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,9 @@ class CommissionsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->commands([
+            CalculateBinaryCommissions::class,
+        ]);
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
@@ -51,7 +55,8 @@ class CommissionsServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+            module_path($this->moduleName, 'Config/config.php'),
+            $this->moduleNameLower
         );
     }
 

@@ -14,6 +14,7 @@ class CommissionWallet extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'id',
         'balance',
         'user_id',
     ];

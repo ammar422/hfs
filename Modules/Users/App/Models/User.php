@@ -76,6 +76,12 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'verification_code',
         'ban_reason',
         'sponsor_id',
+        'placement',
+        'cv',
+        'left_leg_cv',
+        'right_leg_cv',
+        'left_leg_id',
+        'right_leg_id',
     ];
 
     /**
@@ -233,6 +239,17 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     public function rightLeg()    // Right leg direct referrals
     {
         return $this->hasMany(User::class, 'sponsor_id')->where('placement', 'right');
+    }
+
+    // Get all descendants in a leg (for CV aggregation)
+    public function leftLegDescendants()
+    {
+        return $this->hasMany(User::class, 'left_leg_id')->with('leftLegDescendants');
+    }
+
+    public function rightLegDescendants()
+    {
+        return $this->hasMany(User::class, 'right_leg_id')->with('rightLegDescendants');
     }
 
 

@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Modules\Wallets\Entities\CommissionWallet;
+use Modules\Commissions\App\Http\Controllers\Api\CommissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/commissions', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api', 'verified')->group(function () {
+    Route::prefix('user')->group(function () {
+        Route::apiResource('commission', CommissionController::class)->only('store');
+    });
 });

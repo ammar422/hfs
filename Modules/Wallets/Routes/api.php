@@ -17,7 +17,6 @@ use Modules\Wallets\App\Http\Controllers\Api\CommissionWalletController;
 
 Route::group(['middleware' => ['auth:api'], 'verified'], function () {
 
-
     Route::get('wallet/commission', [CommissionWalletController::class, 'index']);
 
     Route::get('wallet/token', [TokenWalletController::class, 'index']);
