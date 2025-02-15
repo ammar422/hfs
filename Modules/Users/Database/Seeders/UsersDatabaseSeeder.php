@@ -51,6 +51,7 @@ class UsersDatabaseSeeder extends Seeder
 
         User::factory()->count(10)->create();
         $users =  User::where('account_type', 'user')->get();
+        // $users =  User::get();
         foreach ($users as $user) {
             $packege = Package::where('cv', '!=', 0)->inRandomOrder()->first();
             Subscription::create([

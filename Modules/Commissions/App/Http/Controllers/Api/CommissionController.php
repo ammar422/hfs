@@ -2,182 +2,157 @@
 
 namespace Modules\Commissions\App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\DB;
 use Modules\Users\App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Modules\Commissions\Entities\Commission;
 use Modules\Wallets\Entities\CommissionWallet;
+use Modules\Commissions\App\Services\LegService;
 use Modules\Commissions\Policies\CommissionPolicy;
 use Modules\Commissions\Transformers\CommissionResource;
+use Modules\Commissions\App\Services\BinaryCommissionService;
 
 class CommissionController extends \Lynx\Base\Api
 {
-    protected $entity           = Commission::class;
-    protected $resourcesJson    = CommissionResource::class;
-    protected $policy           = CommissionPolicy::class;
-    protected $guard            = 'api';
-    protected $spatieQueryBuilder   = true;
-    protected $paginateIndex        = true;
-    protected $withTrashed          = false;
-    protected $FullJsonInStore      = false;  // TRUE,FALSE
-    protected $FullJsonInUpdate     = false;  // TRUE,FALSE
-    protected $FullJsonInDestroy    = false;  // TRUE,FALSE
+    protected $entity = Commission::class;
+    protected $resourcesJson = CommissionResource::class;
+    protected $policy = CommissionPolicy::class;
+    protected $guard = 'api';
+    protected $spatieQueryBuilder = true;
+    protected $paginateIndex = true;
+    protected $withTrashed = false;
+    protected $FullJsonInStore = false;
+    protected $FullJsonInUpdate = false;
+    protected $FullJsonInDestroy = false;
 
-    /**
-     * can handel custom query when retrive data on index,indexGuest
-     * @param $entity model
-     * @return query by Model , Entity
-     */
-    public function query($entity): Object
-    {
-        return $entity;
+    protected BinaryCommissionService $binaryCommissionService;
+    protected LegService $legService;
+
+    public function __construct(
+        BinaryCommissionService $binaryCommissionService,
+        LegService $legService
+    ) {
+        parent::__construct();
+        $this->binaryCommissionService = $binaryCommissionService;
+        $this->legService = $legService;
     }
 
-    /**
-     * this method append data when store or update data
-     * @return array
-     */
+    public function query($entity): object
+    {
+        return $entity->with(['user', 'wallet']);
+    }
+
     public function append(): array
     {
         $referral = User::where('placement', 'tank')
             ->where('account_type', 'user')
             ->where('account_status', 'active')
-            ->find(request('referral_id'));
-        $user = auth('api')->user();
-        $data = [
-            'user_id' => $user->id,
-            'amount' => $referral->subscription->cv * 20 / 100,
+            ->findOrFail(request('referral_id'));
+
+        return [
+            'user_id' => auth()->id(),
+            'amount' => $referral->subscription->cv * 0.2,
             'paid_at' => now(),
         ];
-        // $file = lynx()->uploadFile('file', 'test');
-        // if (!empty($file)) {
-        //     $data['file'] = $file;
-        // }
-        return $data;
-        // return [];
     }
 
-    /**
-     * @param $id integer if you want to use in update rules
-     * @param string $type (store,update)
-     * @return array by (store,update) type using $type variable
-     */
     public function rules(string $type, mixed $id = null): array
     {
-        return $type == 'store' ? [
+        if ($type !== 'store') {
+            return [];
+        }
+
+        return [
             'referral_id' => [
                 'required',
                 'exists:users,id',
                 function ($attribute, $value, $fail) {
-                    // Attempt to find the referral user based on the criteria  
                     $referral = User::where('placement', 'tank')
                         ->where('account_type', 'user')
                         ->where('account_status', 'active')
                         ->find($value);
-
-                    // Check if the referral is null  
-                    if (is_null($referral)) {
-                        $fail('This user is not your referral.');  // User does not exist or does not meet criteria  
-                        return;  // Return early to avoid further checks  
-                    }
-
-                    // Check if the user belongs to the current authenticated user (sponsor)  
-                    if ($referral->sponsor_id === null || $referral->sponsor_id !== auth()->id()) {
-                        $fail('This user is not your referral.');  // Not linked to the current authenticated user  
+                    // dd($referral->sponsor_id !== auth()->id());
+                    if (!$referral || $referral->sponsor_id !== auth()->id()) {
+                        $fail('Invalid referral selection');
                     }
                 },
             ],
             'leg' => 'required|in:left,right',
-        ]   : [];
+        ];
     }
 
-    /**
-     * this method can set your attribute names with validation rules
-     * @return array
-     */
-    public function niceName()
+    public function afterStore($commission): void
     {
-        return [];
+        $referral = User::findOrFail(request('referral_id'));
+        $sponsor = auth()->user();
+
+        $this->placeReferral($referral, $sponsor);
+        $this->processCommissions($referral, $sponsor);
     }
 
-
-    /*
-     * this method use or append or change data before store
-     * @return array
-     */
-    public function beforeStore(array $data): array
+    private function placeReferral(User $referral, User $sponsor): void
     {
+        // $cv = $referral->subscription->cv;
+        $legType = request('leg');
+        // $sponsor->cv += $cv;
+        // $sponsor->save();
 
-        return $data;
-    }
-
-    /**
-     * this method can use or append store data
-     * @return array
-     */
-    public function afterStore($entity): void
-    {
-        $referral = User::where('placement', 'tank')
-            ->where('account_type', 'user')
-            ->where('account_status', 'active')
-            ->find(request('referral_id'));
-
-        $referral->placement = 'tree';
-
-        // $user = auth('api')->user();
-        $sponsor = User::find(auth('api')->id());
-
-        $sponsor->cv += $referral->subscription->cv;
-
-        request('leg') == 'left' ? $sponsor->left_leg_cv += $referral->subscription->cv : $sponsor->right_leg_cv += $referral->subscription->cv;
-        // request('leg') == 'left' ? $sponsor->left_leg_id = $referral->id : $sponsor->right_leg_id = $referral->id;
-        $this->placeUser($referral, $sponsor);
-
-        $commission = $referral->subscription->cv * 0.2;
-        $user_commission_wallet = CommissionWallet::where('user_id', $sponsor->id)->first();
-        $balance = $user_commission_wallet->balance;
-        $user_commission_wallet->update([
-            'balance' => $balance + $commission
+        $referral->update([
+            'placement' => 'tree',
+            // 'sponsor_id' => $sponsor->id,
+            'leg_type' => $legType
         ]);
-        $referral->save();
-        $sponsor->save();
-    }
 
-    protected function placeUser($referral,  $sponsor)
-    {
-        // Determine where to place the referral
-        $legType = request('leg'); // 'left' or 'right'
-        // If sponsor's direct leg is empty, place here
-        // dd( $legType );
-        if (!$sponsor->{$legType . '_leg_id'}) {
+        // dd($sponsor->{"{$legType}_leg_id"});
+        if (!$sponsor->{"{$legType}_leg_id"}) {
             $sponsor->update(["{$legType}_leg_id" => $referral->id]);
+            $referral->update(['upline_id' => $sponsor->id]);
         } else {
-            // Find the last node in the selected leg
-            $lastNode = $this->findLastNode($sponsor, $legType);
-            // dd($lastNode);
-            // Place under the last node's same leg
+            $lastNode = $this->legService->findLastNode($sponsor, $legType);
             $lastNode->update(["{$legType}_leg_id" => $referral->id]);
+            $referral->update(['upline_id' => $lastNode->id]);
         }
-    }
-    private function findLastNode($sponsor,  $legType): User
-    {
 
-        $current = $sponsor;
-        while (true) {
-            $legType == 'left' ? $next_id =  $current->left_leg_id : $next_id =  $current->right_leg_id;
-            $next = User::where('placement', 'tree')
-            ->where('account_type', 'user')
-            ->where('account_status', 'active')
-            ->find($next_id);
-            if (!$next) {
-                return $current; // Found the last node
-            }
-            $current = $next;
+        $this->updateLegCV($referral, $legType);
+    }
+
+    private function updateLegCV(User $referral, string $legType): void
+    {
+        $cv = $referral->subscription->cv;
+        // $leg = $referral->leg_type;
+        $current = $referral->upline;
+        while ($current) {
+            // dd($current);
+            // $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
+            $current->id == 1 ? $legType = $current->downline->leg_type : $legType = request('leg');
+            // dd($legType);
+            // dd("{$legType}_leg_cv");
+            $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
+            // $current->update(["{$leg}_leg_cv" => $current->{"{$leg}_leg_cv"} + $cv]);
+            $current->update(['cv' => $current->cv + $cv]);
+            $current = $current->upline;
         }
     }
-    /**
-     * this method use or append or delete data beforeUpdate
-     * @return array
-     */
+
+    private function processCommissions(User $referral, User $sponsor): void
+    {
+        // Direct commission
+        $directCommission = $referral->subscription->cv * 0.2;
+        $currentBalance = CommissionWallet::where('user_id', $sponsor->id)->value('balance');
+        $newBalance = $currentBalance + $directCommission;
+
+        CommissionWallet::updateOrCreate(
+            ['user_id' => $sponsor->id],
+            ['balance' => $newBalance]
+        );
+        // CommissionWallet::updateOrCreate(
+        //     ['user_id' => $sponsor->id],
+        //     ['balance' => DB::raw("balance + $directCommission")]
+        // );
+
+        // Binary commissions for uplines
+        $this->binaryCommissionService->calculateUplineCommissions($referral);
+    }
     public function beforeUpdate($entity): void
     {
         if (!empty($entity->file)) {

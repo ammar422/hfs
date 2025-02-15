@@ -3,6 +3,7 @@
 namespace Modules\Users\App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Modules\Wallets\Entities\TokenWallet;
@@ -75,13 +76,18 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'account_status',
         'verification_code',
         'ban_reason',
+        'id_code',
+
         'sponsor_id',
-        'placement',
+        'upline_id',
+        'left_leg_id',
+        'right_leg_id',
+        'leg_type',
         'cv',
         'left_leg_cv',
         'right_leg_cv',
-        'left_leg_id',
-        'right_leg_id',
+        'placement',
+
     ];
 
     /**
@@ -115,13 +121,21 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         static::creating(function ($model) {
             $model->full_name = $model->first_name . ' ' . $model->last_name;
         });
+        static::creating(function ($user) {
+            if (is_null($user->id_code)) {
+                $lastIdCode = DB::table('users')->max('id_code');
+                $user->id_code = $lastIdCode ? $lastIdCode + 1 : 400000;
+            }
+        });
         static::created(function ($model) {
-            if (!CommissionWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+            // if (!CommissionWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+            if (!CommissionWallet::where('user_id', $model->id)->exists())
                 $model->commissionWallet()->create([
                     'user_id' => $model->id
                 ]);
 
-            if (!TokenWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+            // if (!TokenWallet::where('user_id', $model->id)->exists() && $model->account_type == 'user')
+            if (!TokenWallet::where('user_id', $model->id)->exists())
                 $model->tokenWallet()->create([
                     'user_id' => $model->id
                 ]);
@@ -224,43 +238,62 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 
     // inner relations start ////////////////////////////// 
 
-    public function referrals()    // Direct referrals (people they sponsored)
+    public function sponsor(): BelongsTo
     {
-        return $this->hasMany(User::class, 'sponsor_id');
+        return $this->belongsTo(User::class, 'sponsor_id');
     }
 
-
-    public function leftLeg()     // Left leg direct referrals
+    public function upline(): BelongsTo
     {
-        return $this->hasMany(User::class, 'sponsor_id')->where('placement', 'left');
+        return $this->belongsTo(User::class, 'upline_id');
     }
 
-
-    public function rightLeg()    // Right leg direct referrals
+    public function downlines(): HasMany
     {
-        return $this->hasMany(User::class, 'sponsor_id')->where('placement', 'right');
+        return $this->hasMany(User::class, 'upline_id');
+    }
+    public function downline(): HasOne
+    {
+        return $this->hasOne(User::class, 'upline_id');
     }
 
-    // Get all descendants in a leg (for CV aggregation)
-    public function leftLegDescendants()
+    public function leftLeg(): BelongsTo
     {
-        return $this->hasMany(User::class, 'left_leg_id')->with('leftLegDescendants');
+        return $this->belongsTo(User::class, 'left_leg_id');
     }
 
-    public function rightLegDescendants()
+    public function rightLeg(): BelongsTo
     {
-        return $this->hasMany(User::class, 'right_leg_id')->with('rightLegDescendants');
+        return $this->belongsTo(User::class, 'right_leg_id');
     }
 
+    public function hasBothLegs(): bool
+    {
+        return $this->left_leg_id && $this->right_leg_id;
+    }
 
-    // inner relations end //////////////////////////////// 
+    public function getAncestorsAttribute()
+    {
+        $ancestors = collect();
+        $current = $this->upline;
 
+        while ($current) {
+            $ancestors->push($current);
+            $current = $current->upline;
+        }
 
+        return $ancestors;
+    }
 
-    // functions start ////////////////////////////// 
+    public function isEligibleForBinary(): bool
+    {
+        return $this->left_leg_cv > 0 && $this->right_leg_cv > 0;
+    }
 
-
-
+    public function getWeakerLegValue(): float
+    {
+        return min($this->left_leg_cv, $this->right_leg_cv);
+    }
 
     // functions end //////////////////////////////// 
 

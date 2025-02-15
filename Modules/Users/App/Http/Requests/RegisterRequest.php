@@ -31,6 +31,7 @@ class RegisterRequest extends FormRequest
             'last_name'         => 'required_if:user_type,dooner|string',
             'email'             => 'required|email|unique:users,email',
             'mobile'            => 'required|string|unique:users,mobile',
+            'sponsor_id'        => 'required|exists:users,id_code',
 
             'password' => [
                 'required',

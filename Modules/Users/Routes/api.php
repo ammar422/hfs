@@ -12,6 +12,8 @@ Route::group(['middleware' => ['guest:api']], function () {
 
     Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetCode']);
     Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']);
+
+    Route::get('sponsor/{id}/data', [UsersAuthController::class, 'sponsorData']);
 });
 
 

@@ -26,6 +26,7 @@ class UsersAuthController extends Controller
         $data = $request->validated();
         $data['password'] = is_string($request->password) ? bcrypt($request->password) : null;
         $data['account_type'] = 'user';
+        $data['sponsor_id'] = User::where('id_code', $request->sponsor_id)->first()->id;
         $user = User::create($data);
         if ($user instanceof User) {
             $token = auth('api')->login($user);
@@ -36,6 +37,7 @@ class UsersAuthController extends Controller
             $user->account_status = 'pending';
             $user->save();
 
+
             if (!$token = auth('api')->attempt([
                 'email'         => $data['email'],
                 'password'      => $request->password,
@@ -45,6 +47,13 @@ class UsersAuthController extends Controller
             }
             return $this->respondWithToken($token, $user, __('users::auth.register'));
         }
+    }
+
+    public function sponsorData($id)
+    {
+        $sponsor = User::where('id_code', $id)->first();
+        dd($sponsor);
+        !empty($sponsor) ?   $this->respondWithUserData($sponsor) : lynx()->message('this user not found')->response();
     }
 
 

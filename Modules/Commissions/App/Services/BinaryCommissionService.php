@@ -1,20 +1,50 @@
 <?php
+
 namespace Modules\Commissions\App\Services;
 
+use Illuminate\Support\Facades\DB;
 use Modules\Users\App\Models\User;
 use Modules\Commissions\Entities\Commission;
+use Modules\Wallets\Entities\CommissionWallet;
 
+class BinaryCommissionService
+{
+    public function calculateUplineCommissions(User $referral): void
+    {
+        $currentUpline = $referral->upline;
+        $addedCV = $referral->subscription->cv;
 
-class BinaryCommissionService {
-    protected $legService;
+        while ($currentUpline) {
+            if ($currentUpline->isEligibleForBinary()) {
+                $commissionAmount = $currentUpline->getWeakerLegValue() * 0.2;
 
-    public function __construct(LegService $legService) {
-        $this->legService = $legService;
+                // Create commission record
+                Commission::create([
+                    'user_id' => $currentUpline->id,
+                    'amount' => $commissionAmount,
+                    'type' => 'binary',
+                    'paid_at' => now()
+                ]);
+
+                // Update wallet
+                CommissionWallet::updateOrCreate(
+                    ['user_id' => $currentUpline->id],
+                    ['balance' => DB::raw("balance + $commissionAmount")]
+                );
+
+                // Deduct CV from legs
+                $weakerValue = $currentUpline->getWeakerLegValue();
+                $currentUpline->decrement('left_leg_cv', $weakerValue);
+                $currentUpline->decrement('right_leg_cv', $weakerValue);
+            }
+
+            $currentUpline = $currentUpline->upline;
+        }
     }
-
-    public function calculateBinaryCommissions() {
+    public function calculateBinaryCommissions()
+    {
         // Auto-place users from the tank
-        $this->autoPlaceUsers();
+        // $this->autoPlaceUsers();
 
         // Process eligible users
         $eligibleUsers = User::whereNotNull('left_leg_id')
@@ -35,6 +65,15 @@ class BinaryCommissionService {
                     'paid_at' => now(),
                 ]);
 
+                //add binary commission to commission wallet
+                $commission = $weakerCV * 0.2;
+                $user_commission_wallet = CommissionWallet::where('user_id',  $user->id,)->first();
+                $balance = $user_commission_wallet->balance;
+                $user_commission_wallet->update([
+                    'balance' => $balance + $commission
+                ]);
+                $user->save();
+
                 // Deduct weaker leg from both legs
                 $user->decrement('left_leg_cv', $weakerCV);
                 $user->decrement('right_leg_cv', $weakerCV);
@@ -53,37 +92,4 @@ class BinaryCommissionService {
         });
     }
 
-    // Auto-place users from the tank into the sponsor's stronger leg
-    private function autoPlaceUsers() {
-        $tankUsers = User::where('placement', 'tank')->get();
-
-        foreach ($tankUsers as $user) {
-            $sponsor = $user->sponsor;
-            if (!$sponsor) continue;
-
-            // Determine stronger leg
-            $legType = ($sponsor->left_leg_cv >= $sponsor->right_leg_cv) ? 'left' : 'right';
-
-            // Find the last node in the leg
-            $lastNode = $this->legService->findLastNode($sponsor, $legType);
-
-            // Place the user under the last node
-            $lastNode->update(["{$legType}_leg_id" => $user->id]);
-
-            // Propagate CV up the hierarchy
-            $this->updateLegCV($user, $legType);
-
-            // Update user placement
-            $user->update(['placement' => $legType]);
-        }
-    }
-
-    // Update CV for all ancestors in the leg
-    private function updateLegCV(User $user, string $legType) {
-        $current = $user->sponsor;
-        while ($current) {
-            $current->increment("{$legType}_leg_cv", $user->cv);
-            $current = $current->sponsor;
-        }
-    }
 }
