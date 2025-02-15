@@ -51,9 +51,8 @@ class UsersAuthController extends Controller
 
     public function sponsorData($id)
     {
-        $sponsor = User::where('id_code', $id)->first();
-        dd($sponsor);
-        !empty($sponsor) ?   $this->respondWithUserData($sponsor) : lynx()->message('this user not found')->response();
+        $sponsor = User::where('id_code', $id)->where('account_status', 'active')->where('account_type', 'user')->first();
+        return   !empty($sponsor) ?   $this->respondWithUserData($sponsor) : lynx()->message('this user not found')->response();
     }
 
 
