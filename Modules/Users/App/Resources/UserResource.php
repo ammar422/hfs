@@ -13,6 +13,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request): array
     {
+        // return  parent::toArray($request);
         return [
 
             "id"                => $this->id,
@@ -20,9 +21,36 @@ class UserResource extends JsonResource
             'first_name'        => $this->first_name,
             'last_name'         => $this->last_name,
             "email"             => $this->email,
+            "id_code"           => $this->id_code,
+            "sponsor"        => [
+                'id'            =>  $this?->sponsor?->id,
+                'id_code'       =>  $this?->sponsor?->id_code,
+                'full_name'     =>  $this?->sponsor?->full_name,
+            ],
+
+            "upline"        => [
+                'id'            =>  $this?->upline?->id,
+                'id_code'       =>  $this?->upline?->id_code,
+                'full_name'     =>  $this?->upline?->full_name,
+            ],
+
+            "left_leg"        => [
+                'id'            =>  $this?->leftLeg?->id,
+                'id_code'       =>  $this?->leftLeg?->id_code,
+                'full_name'     =>  $this?->leftLeg?->full_name,
+            ],
+
+            "rightLeg"        => [
+                'id'            =>  $this?->rightLeg?->id,
+                'id_code'       =>  $this?->rightLeg?->id_code,
+                'full_name'     =>  $this?->rightLeg?->full_name,
+            ],
+            "cv"                => $this->cv,
+            "left_leg_cv"       => $this->left_leg_cv,
+            "right_leg_cv"      => $this->right_leg_cv,
+            "placement"         => $this->placement,
             "mobile"            => $this->mobile,
             "account_status"    => $this->account_status,
-            "user_type"         => $this->user_type,
             "photo"             => url($this->photo),
 
             "verification_code"         => $this->verification_code,

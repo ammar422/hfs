@@ -119,8 +119,10 @@ class UsersAuthController extends Controller
 
         if (filter_var($request->account, FILTER_VALIDATE_EMAIL)) {
             $credentials['email'] = $request->account;
-        } else {
+        } elseif (preg_match('/^\+?[0-9]{10,15}$/', $request->account)) {
             $credentials['mobile'] = $request->account;
+        } else {
+            $credentials['id_code'] = $request->account;
         }
         // return $credentials ;
         $token = auth('api')->attempt($credentials, request('remember_me'));

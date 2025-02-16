@@ -30,7 +30,8 @@ class RegisterRequest extends FormRequest
             'first_name'        => 'required_if:user_type,dooner|string',
             'last_name'         => 'required_if:user_type,dooner|string',
             'email'             => 'required|email|unique:users,email',
-            'mobile'            => 'required|string|unique:users,mobile',
+            // 'mobile'            => 'required|string|unique:users,mobile',
+            'mobile'            => 'required|regex:/^\+?[0-9]{10,15}$/|unique:users,mobile',
             'sponsor_id'        => 'required|exists:users,id_code',
 
             'password' => [
