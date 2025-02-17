@@ -118,7 +118,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     protected static function boot()
     {
         parent::boot();
-        static::creating(function ($model) {
+        static::saving(function ($model) {
             $model->full_name = $model->first_name . ' ' . $model->last_name;
         });
         static::creating(function ($user) {

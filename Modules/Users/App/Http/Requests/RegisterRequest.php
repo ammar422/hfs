@@ -27,8 +27,8 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'        => 'required_if:user_type,dooner|string',
-            'last_name'         => 'required_if:user_type,dooner|string',
+            'first_name'        => 'required|string',
+            'last_name'         => 'required|string',
             'email'             => 'required|email|unique:users,email',
             // 'mobile'            => 'required|string|unique:users,mobile',
             'mobile'            => 'required|regex:/^\+?[0-9]{10,15}$/|unique:users,mobile',

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Wallets\App\Http\Controllers\Api\TokenWalletController;
 use Modules\Wallets\App\Http\Controllers\Api\CommissionWalletController;
+use Modules\Wallets\App\Http\Controllers\Api\CommissionWalletTransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +17,9 @@ use Modules\Wallets\App\Http\Controllers\Api\CommissionWalletController;
 */
 
 Route::group(['middleware' => ['auth:api'], 'verified'], function () {
-
-    Route::get('wallet/commission', [CommissionWalletController::class, 'index']);
-
-    Route::get('wallet/token', [TokenWalletController::class, 'index']);
+    Route::prefix('wallet')->group(function () {
+        Route::get('commission', [CommissionWalletController::class, 'index']);
+        Route::get('token', [TokenWalletController::class, 'index']);
+        Route::apiResource('transactions', CommissionWalletTransactionController::class);
+    });
 });

@@ -11,19 +11,20 @@ use Modules\Commissions\App\Services\LegService;
 use Modules\Commissions\Policies\CommissionPolicy;
 use Modules\Commissions\Transformers\CommissionResource;
 use Modules\Commissions\App\Services\BinaryCommissionService;
+use Modules\Wallets\Entities\CommissionWalletTransaction;
 
 class CommissionController extends \Lynx\Base\Api
 {
-    protected $entity = Commission::class;
-    protected $resourcesJson = CommissionResource::class;
-    protected $policy = CommissionPolicy::class;
-    protected $guard = 'api';
-    protected $spatieQueryBuilder = true;
-    protected $paginateIndex = true;
-    protected $withTrashed = false;
-    protected $FullJsonInStore = false;
-    protected $FullJsonInUpdate = false;
-    protected $FullJsonInDestroy = false;
+    protected $entity               = Commission::class;
+    protected $resourcesJson        = CommissionResource::class;
+    protected $policy               = CommissionPolicy::class;
+    protected $guard                = 'api';
+    protected $spatieQueryBuilder   = true;
+    protected $paginateIndex        = true;
+    protected $withTrashed          = false;
+    protected $FullJsonInStore      = false;
+    protected $FullJsonInUpdate     = false;
+    protected $FullJsonInDestroy    = false;
 
     protected BinaryCommissionService $binaryCommissionService;
     protected LegService $legService;
@@ -119,16 +120,11 @@ class CommissionController extends \Lynx\Base\Api
     private function updateLegCV(User $referral, string $legType): void
     {
         $cv = $referral->subscription->cv;
-        // $leg = $referral->leg_type;
         $current = $referral->upline;
         while ($current) {
-            // dd($current);
-            // $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
+          
             $current->id == 1 ? $legType = $current->downline->leg_type : $legType = request('leg');
-            // dd($legType);
-            // dd("{$legType}_leg_cv");
             $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
-            // $current->update(["{$leg}_leg_cv" => $current->{"{$leg}_leg_cv"} + $cv]);
             $current->update(['cv' => $current->cv + $cv]);
             $current = $current->upline;
         }
@@ -138,17 +134,15 @@ class CommissionController extends \Lynx\Base\Api
     {
         // Direct commission
         $directCommission = $referral->subscription->cv * 0.2;
-        $currentBalance = CommissionWallet::where('user_id', $sponsor->id)->value('balance');
-        $newBalance = $currentBalance + $directCommission;
-
-        CommissionWallet::updateOrCreate(
-            ['user_id' => $sponsor->id],
-            ['balance' => $newBalance]
-        );
-        // CommissionWallet::updateOrCreate(
-        //     ['user_id' => $sponsor->id],
-        //     ['balance' => DB::raw("balance + $directCommission")]
-        // );
+        $sponsor->commissionWallet->increment('balance', $directCommission);
+        CommissionWalletTransaction::create([
+            'amount'           => $directCommission,
+            'user_id'          => $sponsor->id,
+            'wallet_id'        => $sponsor->commissionWallet->id,
+            'status'           => 'done',
+            'paid_at'          => now(),
+            'transaction_type' => 'commission_transaction',
+        ]);
 
         // Binary commissions for uplines
         $this->binaryCommissionService->calculateUplineCommissions($referral);

@@ -4,6 +4,7 @@ namespace Modules\Wallets\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Wallets\Entities\CommissionWalletTransaction;
 
 class WalletsDatabaseSeeder extends Seeder
 {
@@ -14,8 +15,9 @@ class WalletsDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Model::unguard();
+        // Model::unguard();
 
         // $this->call("OthersTableSeeder");
+        CommissionWalletTransaction::factory()->count(30)->create();
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('token_wallets', function (Blueprint $table) {
             $table->id();
             $table->decimal('balance', 65, 2)->default(0);
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->softDeletes();
             $table->timestamps();
         });

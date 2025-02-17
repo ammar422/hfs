@@ -63,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('api/v1')
             ->middleware('api')
-            ->namespace($this->moduleNamespace)
+            // ->namespace($this->moduleNamespace)
             ->group(module_path('Wallets', '/Routes/api.php'));
     }
 }

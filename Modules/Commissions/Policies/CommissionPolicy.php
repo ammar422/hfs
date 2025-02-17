@@ -23,7 +23,13 @@ class CommissionPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        $referral = User::where('placement', 'tank')
+            ->where('account_type', 'user')
+            ->where('account_status', 'active')
+            ->findOrFail(request('referral_id'));
+        if ($referral->subscription)
+            return true;
+        return false;
     }
 
     public function update(User $user, Commission $Commission): bool
