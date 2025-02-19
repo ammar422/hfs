@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('cv');
-            $table->enum('billing_period', ['monthly', 'yearly' , 'quarterly' , 'biannual' , 'lifelong']);
+            $table->enum('billing_period', ['monthly', 'yearly', 'quarterly', 'biannual', 'lifelong']);
             $table->timestamp('expired_at');
             $table->softDeletes();
             $table->timestamps();

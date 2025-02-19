@@ -59,7 +59,10 @@ class CommissionWalletTransactionController extends \Lynx\Base\Api
         return $type == 'store' ? [
             'amount'            => 'required|numeric|min:0.01',
             'transaction_type'  => 'required|in:credit,debit,cach,vodafon_cash,to_token_wallet,visa,commission_transaction',
-        ] : [];
+        ] : [
+            'amount'            => 'required|numeric|min:0.01',
+            'transaction_type'  => 'required|in:credit,debit,cach,vodafon_cash,to_token_wallet,visa,commission_transaction',
+        ];
     }
 
     /**
@@ -96,9 +99,9 @@ class CommissionWalletTransactionController extends \Lynx\Base\Api
      */
     public function beforeUpdate($entity): void
     {
-        if (!empty($entity->file)) {
-            Storage::delete($entity->file);
-        }
+        // if (!empty($entity->file)) {
+        //     Storage::delete($entity->file);
+        // }
     }
 
     /**
@@ -135,9 +138,9 @@ class CommissionWalletTransactionController extends \Lynx\Base\Api
      */
     public function beforeDestroy($entity): void
     {
-        if (!empty($entity->file)) {
-            Storage::delete($entity->file);
-        }
+        // if (!empty($entity->file)) {
+        //     Storage::delete($entity->file);
+        // }
     }
 
     /**

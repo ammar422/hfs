@@ -21,5 +21,6 @@ Route::group(['middleware' => ['auth:api'], 'verified'], function () {
         Route::get('commission', [CommissionWalletController::class, 'index']);
         Route::get('token', [TokenWalletController::class, 'index']);
         Route::apiResource('transactions', CommissionWalletTransactionController::class);
+        Route::post('transactions/{id}', [CommissionWalletTransactionController::class, 'update']);
     });
 });

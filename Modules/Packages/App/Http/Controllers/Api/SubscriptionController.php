@@ -3,6 +3,7 @@
 namespace Modules\Packages\App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Storage;
+use Modules\Packages\Entities\Package;
 use Modules\Packages\Entities\Subscription;
 use Modules\Packages\Policies\SubscriptionPolicy;
 use Modules\Packages\Transformers\SubscriptionResource;
@@ -36,15 +37,15 @@ class SubscriptionController extends \Lynx\Base\Api
      */
     public function append(): array
     {
-        // $data = [
-        //     'user_id' => auth('api')->id(),
-        // ];
+        $data = [
+            'user_id' => auth('api')->id(),
+        ];
         // $file = lynx()->uploadFile('file', 'test');
         // if (!empty($file)) {
         //     $data['file'] = $file;
         // }
-        // return $data;
-        return [];
+        return $data;
+        // return [];
     }
 
     /**
@@ -54,7 +55,9 @@ class SubscriptionController extends \Lynx\Base\Api
      */
     public function rules(string $type, mixed $id = null): array
     {
-        return $type == 'store' ? [] : [];
+        return $type == 'store' ? [
+            'package_id' => 'required|exists:packages,id',
+        ] : [];
     }
 
     /**
@@ -72,7 +75,9 @@ class SubscriptionController extends \Lynx\Base\Api
      */
     public function beforeStore(array $data): array
     {
-        // $data['title'] = 'replace data';
+        $data['name']           = Package::find($data['package_id'])->name;
+        $data['cv']             = Package::find($data['package_id'])->cv;
+        $data['billing_period'] = Package::find($data['package_id'])->billing_period;
         return $data;
     }
 
@@ -145,10 +150,5 @@ class SubscriptionController extends \Lynx\Base\Api
         // do something
         // $entity->file
     }
-
-    public function mySubscription()
-    {
-        $data =   $this->entity::where('user_id', auth('api')->id())->first();
-        return lynx()->data(new $this->resourcesJson($data))->response();
-    }
+    
 }

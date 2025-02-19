@@ -15,6 +15,7 @@ class CommissionWalletTransactionResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'                => $this->id,
             'amount'            => $this->amount,
             'commission_wallet' => [
                 'id'            => $this?->wallet?->id,

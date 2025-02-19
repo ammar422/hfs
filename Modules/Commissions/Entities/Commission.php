@@ -25,7 +25,18 @@ class Commission extends Model
         'paid_at' => 'datetime'
     ];
 
-    
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (!empty($model->user)) {
+                $model->user->increment('total_earning',$model->amount);
+            };
+        });
+    }
+
+
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

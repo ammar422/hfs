@@ -27,11 +27,13 @@ class CommissionWalletTransactionPolicy
 
     public function update(User $user, CommissionWalletTransaction $CommissionWalletTransaction): bool
     {
-        return false;
+        return $user->id == $CommissionWalletTransaction->user_id && $CommissionWalletTransaction->status == 'pending';
     }
 
     public function delete(User $user, CommissionWalletTransaction $CommissionWalletTransaction): bool
     {
-        return false;
+        // return false;
+        return $user->id == $CommissionWalletTransaction->user_id && $CommissionWalletTransaction->status == 'pending';
+
     }
 }

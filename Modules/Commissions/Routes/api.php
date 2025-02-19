@@ -19,5 +19,6 @@ use Modules\Commissions\App\Http\Controllers\Api\CommissionController;
 Route::middleware('auth:api', 'verified')->group(function () {
     Route::prefix('user')->group(function () {
         Route::apiResource('commission', CommissionController::class)->only('store');
+        Route::get('total/earning', [CommissionController::class, 'totalEarning']);
     });
 });

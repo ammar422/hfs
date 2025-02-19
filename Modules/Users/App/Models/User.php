@@ -87,6 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'left_leg_cv',
         'right_leg_cv',
         'placement',
+        'total_earning',
 
     ];
 

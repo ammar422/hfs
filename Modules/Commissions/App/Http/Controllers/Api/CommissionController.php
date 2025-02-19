@@ -122,7 +122,7 @@ class CommissionController extends \Lynx\Base\Api
         $cv = $referral->subscription->cv;
         $current = $referral->upline;
         while ($current) {
-          
+
             $current->id == 1 ? $legType = $current->downline->leg_type : $legType = request('leg');
             $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
             $current->update(['cv' => $current->cv + $cv]);
@@ -202,5 +202,13 @@ class CommissionController extends \Lynx\Base\Api
     {
         // do something
         // $entity->file
+    }
+
+    public function totalEarning()
+    {
+        $total =auth('api')->user()->total_earning;
+        return lynx()->data(
+            ['total_earning' => $total]
+        )->response();
     }
 }

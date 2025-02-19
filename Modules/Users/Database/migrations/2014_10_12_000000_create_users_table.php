@@ -48,6 +48,11 @@ class CreateUsersTable extends Migration
             $table->longText('ban_reason')->nullable();
             $table->foreignId('admin_group_id')->nullable()->constrained('admin_groups')->cascadeOnDelete()->cascadeOnUpdate();
 
+            $table->decimal('total_earning', 65, 2)->default(0);
+            $table->decimal('total_receive', 65, 2)->default(0);
+            $table->decimal('total_bounce', 65, 2)->default(0);
+            $table->decimal('total_transfer', 65, 2)->default(0);
+            
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
