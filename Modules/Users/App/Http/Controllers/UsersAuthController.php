@@ -168,6 +168,14 @@ class UsersAuthController extends Controller
         return $this->respondWithToken(auth('api')->refresh(), $user);
     }
 
+    public function myTank()
+    {
+        $user_id = auth('api')->id();
+        $mytank = User::where('sponsor_id', $user_id)->where('placement', 'tank');
+        return   lynx()
+            ->data(UserResource::collection($mytank->paginate(request('per_page', 15)))->response()->getData())->response();
+    }
+
     /**
      * Get the token array structure.
      *

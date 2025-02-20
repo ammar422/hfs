@@ -22,9 +22,9 @@ Route::group(['middleware' => ['auth:api']], function () {
 });
 
 Route::group(['middleware' => ['auth:api'], 'verified'], function () {
-
     Route::post('logout', [UsersAuthController::class, 'logout']);
     Route::post('refresh', [UsersAuthController::class, 'refresh']);
     Route::get('me', [UsersAuthController::class, 'me']);
     Route::post('edit/profile', [UsersAuthController::class, 'editProfile']);
+    Route::get('user/tank', [UsersAuthController::class, 'myTank']);
 });

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Modules\Ranks\App\Http\Controllers\Api\RanksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,3 +14,8 @@
 |
 */
 
+
+Route::middleware('auth:api', 'verified')->group(function () {
+
+    Route::apiResource('ranks', RanksController::class);
+});

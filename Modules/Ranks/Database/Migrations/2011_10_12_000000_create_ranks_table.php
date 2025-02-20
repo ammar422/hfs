@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('right_volume')->default(0);
             $table->integer('direct_referrals')->default(0);
             $table->json('downline_requirements')->nullable();
+            $table->string('image')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

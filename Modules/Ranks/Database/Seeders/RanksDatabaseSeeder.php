@@ -26,6 +26,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 100,
                 'direct_referrals' => 2,
                 'downline_requirements' => null,
+                'image' => 'Executive.png'
             ],
             [
                 'name' => 'Pearl',
@@ -33,6 +34,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 500,
                 'direct_referrals' => 2,
                 'downline_requirements' => null,
+                'image' => 'pearl.png'
             ],
             [
                 'name' => 'Sapphire',
@@ -40,6 +42,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 1000,
                 'direct_referrals' => 2,
                 'downline_requirements' => null,
+                'image' => 'Sapphire.png'
             ],
             [
                 'name' => 'Ruby',
@@ -47,6 +50,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 8000,
                 'direct_referrals' => 2,
                 'downline_requirements' => json_encode(['Sapphire' => 1]), // 1 Sapphire per leg
+                'image' => 'Ruby.png'
             ],
             [
                 'name' => 'Emerald',
@@ -54,6 +58,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 20000,
                 'direct_referrals' => 3,
                 'downline_requirements' => json_encode(['Ruby' => 1]), // 1 Ruby per leg
+                'image' => 'Emerald.png'
             ],
             [
                 'name' => 'Diamond',
@@ -61,6 +66,8 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 40000,
                 'direct_referrals' => 5,
                 'downline_requirements' => json_encode(['Emerald' => 1]), // 1 Emerald per leg
+                'image' => 'Diamond.png'
+
             ],
             [
                 'name' => 'Blue_Diamond',
@@ -68,6 +75,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 80000,
                 'direct_referrals' => 6,
                 'downline_requirements' => json_encode(['Diamond' => 3, 'min_per_leg' => 1]), // 3 Diamonds, 1 per leg
+                'image' => 'Blue_diamond.png'
             ],
             [
                 'name' => 'Black_Diamond',
@@ -75,6 +83,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 160000,
                 'direct_referrals' => 7,
                 'downline_requirements' => json_encode(['Blue Diamond' => 3, 'min_per_leg' => 1]), // 3 Blue Diamonds, 1 per leg
+                'image' => 'Black_diamond.png'
             ],
             [
                 'name' => 'Crown',
@@ -82,6 +91,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 300000,
                 'direct_referrals' => 8,
                 'downline_requirements' => json_encode(['Black Diamond' => 4, 'min_per_leg' => 2]), // 4 Black Diamonds, 2 per leg
+                'image' => 'Crown.png'
             ],
             [
                 'name' => 'Presidential_Crown',
@@ -89,6 +99,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 500000,
                 'direct_referrals' => 10,
                 'downline_requirements' => json_encode(['Crown' => 4, 'min_per_leg' => 2]), // 4 Crowns, 2 per leg
+                'image' => 'Presidential_Crown.png'
             ],
         ];
 
