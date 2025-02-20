@@ -52,6 +52,11 @@ class UserResource extends JsonResource
             "mobile"            => $this->mobile,
             "account_status"    => $this->account_status,
             "photo"             => url($this->photo),
+            "rank"              => [
+                'id'            =>  $this?->rank?->id,
+                'name'          =>  $this?->rank?->name ? $this->rank->name : 'unranked',
+                'image'         =>  url($this?->rank?->image),
+            ],
 
             "verification_code"         => $this->verification_code,
 

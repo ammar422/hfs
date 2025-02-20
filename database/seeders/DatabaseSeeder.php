@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             \Modules\Packages\Database\Seeders\PackagesDatabaseSeeder::class,
             \Modules\Users\Database\Seeders\UsersDatabaseSeeder::class,
             \Modules\Wallets\Database\Seeders\WalletsDatabaseSeeder::class,
+            \Modules\Ranks\Database\Seeders\RanksDatabaseSeeder::class,
         ]);
     }
 }

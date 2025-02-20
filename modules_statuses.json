@@ -2,5 +2,6 @@
     "Users": true,
     "Wallets": true,
     "Packages": true,
-    "Commissions": true
+    "Commissions": true,
+    "Ranks": true
 }

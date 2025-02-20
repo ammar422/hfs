@@ -25,8 +25,8 @@ class CreateUsersTable extends Migration
             $table->foreignId('right_leg_id')->nullable()->constrained('users');
             $table->enum('leg_type', ['left', 'right', 'root'])->default('root');
             $table->decimal('cv', 12, 2)->default(0);
-            $table->decimal('left_leg_cv', 12, 2)->default(0);
-            $table->decimal('right_leg_cv', 12, 2)->default(0);
+            $table->decimal('left_leg_cv', 65, 2)->default(0);
+            $table->decimal('right_leg_cv', 65, 2)->default(0);
             $table->enum('placement', ['tree', 'tank'])->default('tank');
 
 
@@ -41,18 +41,18 @@ class CreateUsersTable extends Migration
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('password')->default('no_password_for_user')->nullable();
             $table->string('reset_token')->nullable();
+            $table->foreignId('rank_id')->nullable()->constrained('ranks')->cascadeOnDelete()->cascadeOnUpdate();
 
+            $table->decimal('total_earning', 65, 2)->default(0);
+            $table->decimal('total_receive', 65, 2)->default(0);
+            $table->decimal('total_bounce', 65, 2)->default(0);
+            $table->decimal('total_transfer', 65, 2)->default(0);
 
             $table->enum('account_type', ['user', 'admin'])->default('user');
             $table->enum('account_status', ['pending', 'active', 'ban'])->default('active');
             $table->longText('ban_reason')->nullable();
             $table->foreignId('admin_group_id')->nullable()->constrained('admin_groups')->cascadeOnDelete()->cascadeOnUpdate();
 
-            $table->decimal('total_earning', 65, 2)->default(0);
-            $table->decimal('total_receive', 65, 2)->default(0);
-            $table->decimal('total_bounce', 65, 2)->default(0);
-            $table->decimal('total_transfer', 65, 2)->default(0);
-            
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

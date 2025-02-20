@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Ranks\Entities\Rank;
 
 /**
  * @property string|int|null $verification_code
@@ -87,7 +88,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'left_leg_cv',
         'right_leg_cv',
         'placement',
+        'rank_id',
+
         'total_earning',
+        'total_receive',
+        'total_bounce',
+        'total_transfer',
+
 
     ];
 
@@ -233,6 +240,11 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->hasMany(Commission::class);
     }
 
+    public function rank()
+    {
+        return $this->belongsTo(Rank::class);
+    }
+
     // outer relations end /////////////////////////
 
 
@@ -244,6 +256,11 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->belongsTo(User::class, 'sponsor_id');
     }
 
+    public function referrals():HasMany
+    {
+        return $this->hasMany(User::class, 'sponsor_id');
+    }
+
     public function upline(): BelongsTo
     {
         return $this->belongsTo(User::class, 'upline_id');
@@ -253,6 +270,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         return $this->hasMany(User::class, 'upline_id');
     }
+
     public function downline(): HasOne
     {
         return $this->hasOne(User::class, 'upline_id');
@@ -271,6 +289,11 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     public function hasBothLegs(): bool
     {
         return $this->left_leg_id && $this->right_leg_id;
+    }
+    public function scopeHasBothLegsCv($query)
+    {
+        return $query->where('left_leg_cv', '>', 0)
+            ->where('right_leg_cv', '>', 0);
     }
 
     public function getAncestorsAttribute()
@@ -294,6 +317,17 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     public function getWeakerLegValue(): float
     {
         return min($this->left_leg_cv, $this->right_leg_cv);
+    }
+
+    public function leftLegReferrals()
+    {
+        return $this->referrals()->where('leg_type', 'left');
+    }
+
+
+    public function rightLegReferrals()
+    {
+        return $this->referrals()->where('leg_type', 'right');
     }
 
     // functions end //////////////////////////////// 
