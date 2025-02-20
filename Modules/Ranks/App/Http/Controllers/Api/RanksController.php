@@ -3,6 +3,7 @@
 namespace Modules\Ranks\App\Http\Controllers\Api;
 
 use Modules\Ranks\Entities\Rank;
+use Illuminate\Support\Facades\Storage;
 use Modules\Ranks\Policies\RanksPolicy;
 use Modules\Ranks\Transformers\RanksResource;
 
@@ -90,8 +91,8 @@ class RanksController extends \Lynx\Base\Api
      */
     public function beforeUpdate($entity): void
     {
-        if (!empty($data->file)) {
-            \Storage::delete($data->file);
+        if (!empty($entity->file)) {
+            Storage::delete($entity->file);
         }
     }
 
@@ -119,7 +120,7 @@ class RanksController extends \Lynx\Base\Api
      */
     public function afterShow($entity): Object
     {
-        return new \Modules\Ranks\App\resources\RanksResource($entity);
+        return new RanksResource($entity);
     }
 
     /**
@@ -130,7 +131,7 @@ class RanksController extends \Lynx\Base\Api
     public function beforeDestroy($entity): void
     {
         if (!empty($entity->file)) {
-            \Storage::delete($entity->file);
+            Storage::delete($entity->file);
         }
     }
 
