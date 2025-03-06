@@ -17,4 +17,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/rank', function () {
     UpgradeRanks::dispatch();
+    return 'All users were inserted into the Ranked levels up';
 });

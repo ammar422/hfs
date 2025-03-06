@@ -13,9 +13,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('commissions:binary')->weeklyOn(5, '7:00'); // Friday at 7 AM
         // $schedule->command('commissions:binary')->everyMinute();
-        $schedule->job(new UpgradeRanks)->everyMinute();
+        // $schedule->job(new UpgradeRanks)->everyMinute();
+        $schedule->command('commissions:binary')->weeklyOn(5, '7:00'); // Friday at 7 AM
+        $schedule->job(new UpgradeRanks)->quarterly();
     }
 
     /**

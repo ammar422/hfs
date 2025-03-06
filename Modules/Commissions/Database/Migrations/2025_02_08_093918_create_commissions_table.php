@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->decimal('amount', 65, 2);
             $table->enum('type', ['direct', 'binary']);
+            $table->foreignId('referral_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamp('paid_at');
             $table->softDeletes();
             $table->timestamps();

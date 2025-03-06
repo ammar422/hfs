@@ -31,7 +31,7 @@ class UsersDatabaseSeeder extends Seeder
                 'first_name'        => 'test',
                 'last_name'         => 'test',
                 'password'          => bcrypt((string) 123456),
-                'account_type'      => 'admin',
+                'account_type'      => 'user',
                 'admin_group_id'    => $group->id,
                 'email_verified_at' => now(),
             ]);
@@ -49,7 +49,7 @@ class UsersDatabaseSeeder extends Seeder
             ]);
         }
 
-        User::factory()->count(10)->create();
+        User::factory()->count(10)->create(['email_verified_at' => now()]);
         $users =  User::where('account_type', 'user')->get();
         // $users =  User::get();
         foreach ($users as $user) {

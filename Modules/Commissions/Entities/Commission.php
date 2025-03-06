@@ -18,6 +18,7 @@ class Commission extends Model
         'amount',
         'type',
         'paid_at',
+        'referral_id',
     ];
 
     protected $casts = [
@@ -30,7 +31,7 @@ class Commission extends Model
         parent::boot();
         static::creating(function ($model) {
             if (!empty($model->user)) {
-                $model->user->increment('total_earning',$model->amount);
+                $model->user->increment('total_earning', $model->amount);
             };
         });
     }

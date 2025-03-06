@@ -15,7 +15,7 @@ class BinaryCommissionService
         $addedCV = $referral->subscription->cv;
 
         while ($currentUpline) {
-            if ($currentUpline->isEligibleForBinary()) {
+            if ($currentUpline->isEligibleForBinary() && $currentUpline->sponsor_id != $currentUpline->upline_id) {
                 $commissionAmount = $currentUpline->getWeakerLegValue() * 0.2;
 
                 // Create commission record
@@ -26,11 +26,7 @@ class BinaryCommissionService
                     'paid_at' => now()
                 ]);
 
-                // Update wallet
-                CommissionWallet::updateOrCreate(
-                    ['user_id' => $currentUpline->id],
-                    ['balance' => DB::raw("balance + $commissionAmount")]
-                );
+                $currentUpline->commissionWallet?->update(['balance' => DB::raw("balance +$commissionAmount")]);
 
                 // Deduct CV from legs
                 $weakerValue = $currentUpline->getWeakerLegValue();
@@ -77,6 +73,7 @@ class BinaryCommissionService
                 // Deduct weaker leg from both legs
                 $user->decrement('left_leg_cv', $weakerCV);
                 $user->decrement('right_leg_cv', $weakerCV);
+                $user->decrement('cv', $weakerCV);
             }
         }
 
@@ -91,5 +88,4 @@ class BinaryCommissionService
             ]);
         });
     }
-
 }

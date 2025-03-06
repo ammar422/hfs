@@ -51,9 +51,10 @@ class CommissionController extends \Lynx\Base\Api
             ->findOrFail(request('referral_id'));
 
         return [
-            'user_id' => auth()->id(),
-            'amount' => $referral->subscription->cv * 0.2,
-            'paid_at' => now(),
+            'user_id'       => auth()->id(),
+            'referral_id'   => request('referral_id'),
+            'amount'        => $referral->subscription->cv * 0.2,
+            'paid_at'       => now(),
         ];
     }
 
@@ -72,7 +73,6 @@ class CommissionController extends \Lynx\Base\Api
                         ->where('account_type', 'user')
                         ->where('account_status', 'active')
                         ->find($value);
-                    // dd($referral->sponsor_id !== auth()->id());
                     if (!$referral || $referral->sponsor_id !== auth()->id()) {
                         $fail('Invalid referral selection');
                     }
@@ -81,7 +81,6 @@ class CommissionController extends \Lynx\Base\Api
             'leg' => 'required|in:left,right',
         ];
     }
-
     public function afterStore($commission): void
     {
         $referral = User::findOrFail(request('referral_id'));
@@ -93,18 +92,12 @@ class CommissionController extends \Lynx\Base\Api
 
     private function placeReferral(User $referral, User $sponsor): void
     {
-        // $cv = $referral->subscription->cv;
         $legType = request('leg');
-        // $sponsor->cv += $cv;
-        // $sponsor->save();
 
         $referral->update([
             'placement' => 'tree',
-            // 'sponsor_id' => $sponsor->id,
             'leg_type' => $legType
         ]);
-
-        // dd($sponsor->{"{$legType}_leg_id"});
         if (!$sponsor->{"{$legType}_leg_id"}) {
             $sponsor->update(["{$legType}_leg_id" => $referral->id]);
             $referral->update(['upline_id' => $sponsor->id]);
@@ -119,14 +112,18 @@ class CommissionController extends \Lynx\Base\Api
 
     private function updateLegCV(User $referral, string $legType): void
     {
+
         $cv = $referral->subscription->cv;
         $current = $referral->upline;
         while ($current) {
-
-            $current->id == 1 ? $legType = $current->downline->leg_type : $legType = request('leg');
             $current->update(["{$legType}_leg_cv" => $current->{"{$legType}_leg_cv"} + $cv]);
             $current->update(['cv' => $current->cv + $cv]);
-            $current = $current->upline;
+            if ($current->upline) {
+                $legType = $current->leg_type;
+                $current = $current->upline;
+            } else {
+                break;
+            }
         }
     }
 
@@ -134,11 +131,11 @@ class CommissionController extends \Lynx\Base\Api
     {
         // Direct commission
         $directCommission = $referral->subscription->cv * 0.2;
-        $sponsor->commissionWallet->increment('balance', $directCommission);
+        $sponsor->commissionWallet?->increment('balance', $directCommission);
         CommissionWalletTransaction::create([
             'amount'           => $directCommission,
             'user_id'          => $sponsor->id,
-            'wallet_id'        => $sponsor->commissionWallet->id,
+            'wallet_id'        => $sponsor->commissionWallet?->id,
             'status'           => 'done',
             'paid_at'          => now(),
             'transaction_type' => 'commission_transaction',
@@ -206,7 +203,7 @@ class CommissionController extends \Lynx\Base\Api
 
     public function totalEarning()
     {
-        $total =auth('api')->user()->total_earning;
+        $total = auth('api')->user()->total_earning;
         return lynx()->data(
             ['total_earning' => $total]
         )->response();
