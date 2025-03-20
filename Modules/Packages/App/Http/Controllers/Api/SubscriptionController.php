@@ -99,7 +99,7 @@ class SubscriptionController extends Api
     {
         $package = Package::find(request('package_id'));
         $payment = $this->stripe_service->createPaymentIntent($package->price);
-        dd($payment);
+        dd($payment['id']);
         $entity->payment_intent_id = $payment['id'];
         $entity->amount = intval($payment['amount']) / 100;
         $entity->save();
