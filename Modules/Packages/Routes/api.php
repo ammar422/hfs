@@ -23,7 +23,7 @@ Route::apiResource('Packages', PackageController::class)->only('index', 'show');
 Route::middleware('auth:api', 'verified')->group(function () {
     Route::prefix('user')->group(function () {
         Route::post('subscribe', [SubscriptionController::class, 'store'])->middleware('check.subscripition');
-        Route::get('subscribe/{user_id}', [SubscriptionController::class, 'show']);
+        Route::get('subscribe', [SubscriptionController::class, 'index']);
         Route::delete('subscribe/{user_id}', [SubscriptionController::class, 'destroy']);
         Route::post('/subscribe/capture-payment', [SubscriptionController::class, 'capturePayment']);
     });
