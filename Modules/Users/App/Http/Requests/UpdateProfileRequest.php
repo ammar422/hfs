@@ -30,7 +30,7 @@ class UpdateProfileRequest extends FormRequest
             'first_name'    => 'required|string',
             'last_name'     => 'required|string',
             'mobile'        => 'required|string|unique:users,mobile,' . $userId,
-            'photo'         => 'sometimes|nullable|image|mimetypes:image/*|max:2048',
+            'photo'         => 'sometimes|nullable|image|mimetypes:image/*',
 
         ];
     }

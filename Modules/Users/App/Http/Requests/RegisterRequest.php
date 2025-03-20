@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
             'first_name'        => 'required|string',
             'last_name'         => 'required|string',
             'email'             => 'required|email|unique:users,email',
-            // 'mobile'            => 'required|string|unique:users,mobile',
+            'photo'             => 'sometimes|nullable|image|mimetypes:image/*',
             'mobile'            => 'required|regex:/^\+?[0-9]{10,15}$/|unique:users,mobile',
             'sponsor_id'        => 'required|exists:users,id_code',
 

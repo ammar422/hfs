@@ -17,7 +17,7 @@ class RanksPolicy
 
     public function view(User $user, Rank $Rank): bool
     {
-        return false;
+        return true;
     }
 
     public function create(User $user): bool

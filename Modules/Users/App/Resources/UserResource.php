@@ -13,9 +13,9 @@ class UserResource extends JsonResource
      */
     public function toArray($request): array
     {
-        // return  parent::toArray($request);
-        return [
 
+        // return  parent::toArray($request);
+        $data = [
             "id"                => $this->id,
             'full_name'         => $this->full_name,
             'first_name'        => $this->first_name,
@@ -51,15 +51,34 @@ class UserResource extends JsonResource
             "placement"         => $this->placement,
             "mobile"            => $this->mobile,
             "account_status"    => $this->account_status,
-            "photo"             => url($this->photo),
+            "photo"             => url('storage/' . $this->photo),
             "rank"              => [
                 'id'            =>  $this?->rank?->id,
                 'name'          =>  $this?->rank?->name ? $this->rank->name : 'unranked',
-                'image'         =>  url($this?->rank?->image),
+                'image'         => $this->rank ?  url('storage/ranks_images/' . $this?->rank?->image) : null,
+            ],
+            'subscription'           => [
+                'id'              => $this->subscription?->id,
+                'name'            => $this->subscription?->name,
+                'billing_period'  => $this->subscription?->billing_period,
+                'expired_at'      => $this->subscription?->expired_at,
+                'remaining_days'  => $this->subscription?->remaining_days,
             ],
 
             "verification_code"         => $this->verification_code,
-
         ];
+        $total_downlines = $this->referrals->where('placement', '!=', 'tank')->where('leg_type', '!=', 'root');
+        if ($total_downlines) {
+            $right = 0;
+            $left = 0;
+            foreach ($total_downlines as $total_downline) {
+                $total_downline->leg_type == 'left' ? $left++ : $right++;
+            }
+            $data['total_downline'] = [
+                'right' => $right,
+                'left' => $left,
+            ];
+        }
+        return $data;
     }
 }

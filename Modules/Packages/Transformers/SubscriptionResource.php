@@ -14,6 +14,7 @@ class SubscriptionResource extends JsonResource
      */
     public function toArray($request)
     {
+        return parent::toArray($request);
 
         auth('api')->user()->subscription ? $data = [
             "id"                => $this->id,
@@ -23,6 +24,8 @@ class SubscriptionResource extends JsonResource
             "created_at"        => $this->created_at,
             "expired_at"        => $this->expired_at,
             "remaining_days"    => $this->remaining_days,
+            "status"            => $this->status,
+            "gatway_url"        => $this->gatway_url,
         ] : $data = [];
         return $data;
     }

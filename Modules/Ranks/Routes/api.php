@@ -17,5 +17,7 @@ use Modules\Ranks\App\Http\Controllers\Api\RanksController;
 
 Route::middleware('auth:api', 'verified')->group(function () {
 
-    Route::apiResource('ranks', RanksController::class);
+    Route::apiResource('ranks', RanksController::class)->only('index', 'show');
+    Route::get('next/rank', [RanksController::class, 'nextRank']);
+    Route::get('downlines/rank/details', [RanksController::class, 'dowmlineRanksDetails']);
 });

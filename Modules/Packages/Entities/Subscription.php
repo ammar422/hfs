@@ -19,7 +19,10 @@ class Subscription extends Model
         'name',
         'cv',
         'billing_period',
-        'expired_at'
+        'expired_at',
+        'status',
+        'amount',
+        'payment_intent_id',
     ];
 
 

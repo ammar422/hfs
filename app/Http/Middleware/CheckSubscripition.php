@@ -19,7 +19,7 @@ class CheckSubscripition
         $subscripition = $user->subscription()->exists();
         if (!$subscripition)
             return $next($request);
-        return lynx()
+        return lynx()->status(400)
             ->message('You are already subscribed to the ' . $user->subscription->name . ' package and your subscripition ends at ' . $user->subscription->expired_at)
             ->response();
     }

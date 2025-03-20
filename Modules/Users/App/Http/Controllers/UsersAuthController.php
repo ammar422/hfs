@@ -28,6 +28,10 @@ class UsersAuthController extends Controller
         $data['account_type'] = 'user';
         $data['sponsor_id'] = User::where('id_code', $request->sponsor_id)->first()->id;
         $user = User::create($data);
+        if ($request->hasFile('photo')) {
+            $path =  $this->imageProccessing($user, $request->file('photo'));
+            $user->photo = $path;
+        }
         if ($user instanceof User) {
             $token = auth('api')->login($user);
 
@@ -36,7 +40,6 @@ class UsersAuthController extends Controller
             $user->verification_code = $code;
             $user->account_status = 'pending';
             $user->save();
-
 
             if (!$token = auth('api')->attempt([
                 'email'         => $data['email'],

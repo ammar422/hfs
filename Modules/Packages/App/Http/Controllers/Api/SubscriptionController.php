@@ -2,13 +2,15 @@
 
 namespace Modules\Packages\App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Storage;
+use Lynx\Base\Api;
+use App\Services\StripeService;
 use Modules\Packages\Entities\Package;
+use Illuminate\Support\Facades\Storage;
 use Modules\Packages\Entities\Subscription;
 use Modules\Packages\Policies\SubscriptionPolicy;
 use Modules\Packages\Transformers\SubscriptionResource;
 
-class SubscriptionController extends \Lynx\Base\Api
+class SubscriptionController extends Api
 {
     protected $entity           = Subscription::class;
     protected $resourcesJson    = SubscriptionResource::class;
@@ -17,9 +19,16 @@ class SubscriptionController extends \Lynx\Base\Api
     protected $spatieQueryBuilder   = true;
     protected $paginateIndex        = true;
     protected $withTrashed          = false;
-    protected $FullJsonInStore      = false;  // TRUE,FALSE
+    protected $FullJsonInStore      = true;  // TRUE,FALSE
     protected $FullJsonInUpdate     = false;  // TRUE,FALSE
     protected $FullJsonInDestroy    = false;  // TRUE,FALSE
+
+
+    protected $stripe_service;
+    public function __construct(StripeService $stripe_service)
+    {
+        $this->stripe_service = $stripe_service;
+    }
 
     /**
      * can handel custom query when retrive data on index,indexGuest
@@ -75,9 +84,10 @@ class SubscriptionController extends \Lynx\Base\Api
      */
     public function beforeStore(array $data): array
     {
-        $data['name']           = Package::find($data['package_id'])->name;
-        $data['cv']             = Package::find($data['package_id'])->cv;
-        $data['billing_period'] = Package::find($data['package_id'])->billing_period;
+        $package = Package::find(request('package_id'));
+        $data['name']           = $package->name;
+        $data['cv']             = $package->cv;
+        $data['billing_period'] = $package->billing_period;
         return $data;
     }
 
@@ -87,7 +97,17 @@ class SubscriptionController extends \Lynx\Base\Api
      */
     public function afterStore($entity): void
     {
-        // dd($entity->id);
+        $package = Package::find(request('package_id'));
+        $payment = $this->stripe_service->createPaymentIntent($package->price);
+        $entity->payment_intent_id = $payment['id'];
+        $entity->amount = intval($payment['amount']) / 100;
+        $entity->save();
+    }
+
+
+    public function capturePayment()
+    {
+        return $this->stripe_service->capturePayment(request('paymentIntentId'));
     }
 
     /**
@@ -150,5 +170,4 @@ class SubscriptionController extends \Lynx\Base\Api
         // do something
         // $entity->file
     }
-    
 }

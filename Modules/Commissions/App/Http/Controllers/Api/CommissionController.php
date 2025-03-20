@@ -29,10 +29,8 @@ class CommissionController extends \Lynx\Base\Api
     protected BinaryCommissionService $binaryCommissionService;
     protected LegService $legService;
 
-    public function __construct(
-        BinaryCommissionService $binaryCommissionService,
-        LegService $legService
-    ) {
+    public function __construct(BinaryCommissionService $binaryCommissionService, LegService $legService)
+    {
         parent::__construct();
         $this->binaryCommissionService = $binaryCommissionService;
         $this->legService = $legService;
