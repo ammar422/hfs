@@ -150,6 +150,7 @@ class RanksController extends \Lynx\Base\Api
     {
         $user = auth('api')->user();
         $current_rank =  $user->rank;
+        dd($current_rank);
         $next_rank = Rank::where('id', $current_rank->id + 1)->first();
         if ($next_rank) {
             return lynx()->data([
