@@ -153,7 +153,7 @@ class RanksController extends \Lynx\Base\Api
         $current_rank == null ? $next_rank = Rank::where('id', 1)->first() :  $next_rank = Rank::where('id', $current_rank->id + 1)->first();
         if ($next_rank) {
             return lynx()->data([
-                'current_rank'    => $current_rank->name,
+                'current_rank'    => $user->rank?->name,
                 'next_rank'       => $next_rank->name,
                 'left_required'   => $next_rank->left_volume,
                 'left_current'    => $user->left_leg_cv,
