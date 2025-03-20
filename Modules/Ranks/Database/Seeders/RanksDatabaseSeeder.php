@@ -34,7 +34,7 @@ class RanksDatabaseSeeder extends Seeder
                 'right_volume' => 500,
                 'direct_referrals' => 2,
                 'downline_requirements' => null,
-                'image' => 'pearl.png'
+                'image' => 'Jade.png'
             ],
             [
                 'name' => 'Pearl',
