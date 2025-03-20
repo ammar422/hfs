@@ -29,7 +29,7 @@ class RanksDatabaseSeeder extends Seeder
                 'image' => 'Executive.png'
             ],
             [
-                'name' => 'Pearl',
+                'name' => 'Jade',
                 'left_volume' => 500,
                 'right_volume' => 500,
                 'direct_referrals' => 2,
@@ -37,10 +37,18 @@ class RanksDatabaseSeeder extends Seeder
                 'image' => 'pearl.png'
             ],
             [
-                'name' => 'Sapphire',
+                'name' => 'Pearl',
                 'left_volume' => 1000,
                 'right_volume' => 1000,
                 'direct_referrals' => 2,
+                'downline_requirements' => null,
+                'image' => 'pearl.png'
+            ],
+            [
+                'name' => 'Sapphire',
+                'left_volume' => 3000,
+                'right_volume' => 3000,
+                'direct_referrals' => 3,
                 'downline_requirements' => null,
                 'image' => 'Sapphire.png'
             ],
@@ -48,7 +56,7 @@ class RanksDatabaseSeeder extends Seeder
                 'name' => 'Ruby',
                 'left_volume' => 8000,
                 'right_volume' => 8000,
-                'direct_referrals' => 2,
+                'direct_referrals' => 3,
                 'downline_requirements' => json_encode(['Sapphire' => 1]), // 1 Sapphire per leg
                 'image' => 'Ruby.png'
             ],
@@ -56,7 +64,7 @@ class RanksDatabaseSeeder extends Seeder
                 'name' => 'Emerald',
                 'left_volume' => 20000,
                 'right_volume' => 20000,
-                'direct_referrals' => 3,
+                'direct_referrals' => 4,
                 'downline_requirements' => json_encode(['Ruby' => 1]), // 1 Ruby per leg
                 'image' => 'Emerald.png'
             ],
