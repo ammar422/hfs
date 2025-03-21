@@ -206,4 +206,56 @@ class CommissionController extends \Lynx\Base\Api
             ['total_earning' => $total]
         )->response();
     }
+
+    public function node($user_id)
+    {
+        $user = User::find($user_id);
+        return $data = [
+            'rightLeg' => $user->rightLeg ? [
+                'full_name'    => $user->rightLeg->full_name,
+                'first_name'   => $user->rightLeg->first_name,
+                'last_name'    => $user->rightLeg->last_name,
+                'left_leg_id'  => $user->rightLeg->left_leg_id,
+                'right_leg_id' => $user->rightLeg->right_leg_id,
+                'id_code'      => $user->rightLeg->id_code,
+                'email'        => $user->rightLeg->email,
+                'photo'        => $user->rightLeg->photo,
+                "rank"              => [
+                    'id'            =>  $user->rightLeg->rank?->id,
+                    'name'          =>  $user->rightLeg->rank ? $user->rightLeg->rank->name : 'unranked',
+                    'image'         =>  $user->rightLeg->rank ?  url('storage/ranks_images/' . $user->rightLeg->rank->image) : null,
+                ],
+                'subscription'           => [
+                    'id'              => $user->rightLeg->subscription?->id,
+                    'name'            => $user->rightLeg->subscription?->name,
+                    'billing_period'  => $user->rightLeg->subscription?->billing_period,
+                    'expired_at'      => $user->rightLeg->subscription?->expired_at,
+                    'remaining_days'  => $user->rightLeg->subscription?->remaining_days,
+                ],
+            ] : null,
+            'leftLeg' => $user->leftLeg ? [
+                'full_name'    => $user->leftLeg->full_name,
+                'first_name'   => $user->leftLeg->first_name,
+                'last_name'    => $user->leftLeg->last_name,
+                'left_leg_id'  => $user->leftLeg->left_leg_id,
+                'right_leg_id' => $user->leftLeg->right_leg_id,
+                'id_code'      => $user->leftLeg->id_code,
+                'email'        => $user->leftLeg->email,
+                'photo'        => $user->leftLeg->photo,
+                'rank' => [
+                    'id'    => $user->leftLeg->rank?->id,
+                    'name'  => $user->leftLeg->rank ? $user->leftLeg->rank->name : 'unranked',
+                    'image' => $user->leftLeg->rank ? url('storage/ranks_images/' . $user->leftLeg->rank->image) : null,
+                ],
+                'subscription' => [
+                    'id'              => $user->leftLeg->subscription?->id,
+                    'name'            => $user->leftLeg->subscription?->name,
+                    'billing_period'  => $user->leftLeg->subscription?->billing_period,
+                    'expired_at'      => $user->leftLeg->subscription?->expired_at,
+                    'remaining_days'  => $user->leftLeg->subscription?->remaining_days,
+                ],
+            ] : null,
+
+        ];
+    }
 }
