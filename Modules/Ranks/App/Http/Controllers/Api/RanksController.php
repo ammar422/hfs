@@ -172,7 +172,7 @@ class RanksController extends \Lynx\Base\Api
         $referrals = $user->referrals;
         $data = [];
 
-        $ranks = [
+        $ranks_names = [
             'Executive'          => 0,
             'Jade'               => 0,
             'Pearl'              => 0,
@@ -185,7 +185,7 @@ class RanksController extends \Lynx\Base\Api
             'Crown'              => 0,
             'Presidential_Crown' => 0
         ];
-        $data = [
+        $ranks = [
             'Executive'          =>  ['left' => 0, 'right' => 0],
             'Jade'               =>  ['left' => 0, 'right' => 0],
             'Pearl'              =>  ['left' => 0, 'right' => 0],
@@ -199,37 +199,15 @@ class RanksController extends \Lynx\Base\Api
             'Presidential_Crown' =>  ['left' => 0, 'right' => 0],
         ];
         foreach ($referrals as $referral) {
-            if ($referral->rank && array_key_exists($referral->rank->name, $ranks)) {
-                $ranks[$referral->rank->name]++;
+            if ($referral->rank && array_key_exists($referral->rank->name, $ranks_names)) {
+                // return $referral->rank->name;
+                if ($referral->leg_type === 'left') {
+                    $ranks[$referral->rank->name]['left']++;
+                } elseif ($referral->leg_type === 'right') {
+                    $ranks[$referral->rank->name]['right']++;
+                }
             }
         }
-        // return $ranks;
-
-        $data = [
-            'Executive' =>  ['left' => 0, 'right' => 0,]
-        ];
-
-        // Prepare the final structure  
-        $data['LEFT'] = [];  // Assuming some logic to determine left/right  
-        $data['RIGHT'] = []; // Assuming some logic to determine left/right  
-
-
-        $data['RIGHT']['Executive'] = $ranks['Executive'];
-        $data['RIGHT']['Jade'] = $ranks['Jade'];
-        $data['RIGHT']['Pearl'] = $ranks['Pearl'];
-        $data['RIGHT']['Sapphire'] = $ranks['Sapphire'];
-        $data['RIGHT']['Ruby'] = $ranks['Ruby'];
-        $data['RIGHT']['Emerald'] = $ranks['Emerald'];
-        $data['RIGHT']['Diamond'] = $ranks['Diamond'];
-        $data['RIGHT']['Blue_Diamond'] = $ranks['Blue_Diamond'];
-        $data['RIGHT']['Black_Diamond'] = $ranks['Black_Diamond'];
-        $data['RIGHT']['Crown'] = $ranks['Crown'];
-        $data['RIGHT']['Presidential_Crown'] = $ranks['Presidential_Crown'];
-
-        // Add any logic you need to populate LEFT array, could be similar  
-        // For now, initial data shows all zeros, so you can adopt same structure  
-
-        // Return the final data  
-        return $data;
+        return lynx()->data($ranks)->response();
     }
 }
